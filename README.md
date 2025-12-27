@@ -1,117 +1,93 @@
 # Echo Tutor - AI 语言学习助手
 
-一个基于多智能体架构的智能语言学习系统，支持文档/图片读取、发音练习和智能问答。
+一个基于多智能体架构的**云原生**智能语言学习系统，支持文档/图片读取、标准发音辅导及智能交互问答。
 
 ## 🌟 功能特性
 
-- 📄 **文档/图片上传** - 支持文本文件和图片OCR识别
-- 🔊 **智能发音** - 使用ModelScope TTS生成标准发音
-- 🤖 **AI问答** - 基于Qwen大模型生成学习问题
-- ✅ **智能评估** - 自动评估答案并提供反馈
-- 📚 **分段学习** - 智能分段，循序渐进
+- 📄 **多模态内容识别** - 使用 `qwen-vl-ocr` 云端大模型，精准识别图片与文档内容。
+- 🔊 **旗舰级语音合成** - 集成 DashScope `qwen3-tts-flash` 模型，提供极速、自然的语音辅导。
+- 🤖 **多智能体教学** - 基于 LangGraph 编排多智能体工作流，实现文档阅读、问题生成与评估。
+- ✅ **智能互动评估** - 实时纠正发音与回答，提供建设性的学习反馈。
+- ⚡ **极致启动速度** - 全面迁移至云端 API，告别 GB 级模型下载，实现后端秒级启动。
 
 ## 🏗️ 技术栈
 
 ### 后端
-- **FastAPI** - 现代化的Python Web框架
-- **LangGraph** - 多智能体编排框架
-- **ModelScope** - OCR、TTS和Qwen LLM API
-- **Pydantic** - 数据验证
+- **FastAPI** - 异步高性能 Web 框架
+- **LangGraph** - 多智能体工作流引擎
+- **DashScope (阿里云)** - Qwen-VL (OCR), Qwen3-TTS (语音), Qwen-Turbo (大模型)
+- **uv** - 现代 Python 包管理工具
 
 ### 前端
-- **Vue 3** - 渐进式JavaScript框架
-- **Element Plus** - 优雅的UI组件库
-- **Vite** - 快速的构建工具
-- **Axios** - HTTP客户端
+- **Vue 3 + Vite** - 响应式前端开发环境
+- **Element Plus** - 高质量 UI 组件库
+- **Axios** - 异步数据交互
 
 ## 📁 项目结构
 
 ```
 echo_tutor/
-├── pyproject.toml             # 项目配置和依赖管理（uv）
+├── pyproject.toml             # 项目配置和依赖管理 (uv)
 ├── README.md                  # 项目说明文档
-├── .env.example               # 环境变量示例
-├── .gitignore                 # Git忽略文件
+├── .env                       # 环境变量 (根目录)
+├── .gitignore                 # Git 忽略文件
 │
-├── echo_tutor/                # 主Python包
-│   ├── __init__.py            # 包初始化
-│   ├── main.py                # FastAPI应用入口
-│   ├── config.py              # 配置管理
-│   │
-│   ├── agents/                # LangGraph智能体
-│   │   ├── __init__.py
-│   │   ├── graph.py           # 工作流定义
-│   │   ├── reader_agent.py   # 文档读取Agent
-│   │   └── tutor_agent.py    # 发音辅导Agent
-│   │
-│   ├── api/                   # API路由
-│   │   ├── __init__.py
-│   │   └── routes.py          # API端点定义
-│   │
-│   ├── models/                # 数据模型
-│   │   ├── __init__.py
-│   │   └── schemas.py         # Pydantic模型
-│   │
-│   └── services/              # 服务层
-│       ├── __init__.py
-│       └── modelscope_client.py  # ModelScope API客户端
+├── echo_tutor/                # 主 Python 包
+│   ├── main.py                # FastAPI 入口 & 静态文件挂载
+│   ├── config.py              # 集中配置管理
+│   ├── agents/                # LangGraph 智能体逻辑
+│   ├── api/                   # RESTful API 路由
+│   ├── models/                # Pydantic 核心数据模型
+│   └── services/              # 云端 API 客户端 (DashScope)
 │
-├── tests/                     # 测试目录
-│   ├── __init__.py
-│   └── test_config.py         # 配置测试
+├── scripts/                   # 实用工具脚本
+│   └── diagnose_api.py        # API 权限诊断工具
 │
-├── data/                      # 数据目录
-│   └── uploads/               # 上传文件存储
+├── data/                      # 存储目录
+│   └── uploads/               # 本地保存的上传文件与生成的语音 (.wav)
 │
-└── frontend/                  # 前端代码
-    ├── src/
-    │   ├── components/        # Vue组件
-    │   ├── views/             # 页面视图
-    │   ├── services/          # API服务
-    │   ├── App.vue
-    │   └── main.js
-    ├── index.html
+└── frontend/                  # Vue 前端项目
     ├── package.json
-    └── vite.config.js
+    └── src/
 ```
 
 ## 🚀 快速开始
 
-### 前置要求
+### 1. 准备工作
+- **Python 3.9+** 建议安装 [uv](https://github.com/astral-sh/uv) 提升效率。
+- **Node.js 18+** 用于前端运行。
+- **DashScope API Key**: 请访问 [阿里云官网](https://dashscope.console.aliyun.com/apiKey) 领取。
 
-- Python 3.9+
-- [uv](https://github.com/astral-sh/uv) - 快速的Python包管理器
-- Node.js 18+
-- ModelScope API Key
-
-### 安装 uv
-
-如果还没有安装 uv，可以通过以下命令安装：
-
-```bash
-# macOS/Linux
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Windows
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
-
-### 1. 配置环境变量
-
-```bash
-# 复制环境变量示例文件
-cp .env.example .env
-```
-
-编辑 `.env` 文件，填入你的 ModelScope API Key：
-
+### 2. 环境配置
+在根目录创建 `.env` 文件：
 ```env
-MODELSCOPE_API_KEY=your_api_key_here
+MODELSCOPE_API_KEY=sk-xxxx...  # 填入你的真实 sk- 前缀的 Key
 QWEN_MODEL=qwen-turbo
 ```
 
-### 2. 启动后端
+### 3. 启动项目
 
+#### 后端启动 (根目录执行)
 ```bash
-# 进入项目根目录
+# 同步依赖并启动
+uv sync
+uv run uvicorn echo_tutor.main:app --reload
+```
+后端运行在: `http://localhost:8000`
 
+#### 前端启动 (进入 frontend 目录)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+前端预览: `http://localhost:5173`
+
+## 🛠️ 诊断工具
+如果您遇到 401 (未授权) 或 400 (参数错误)，请运行诊断脚本：
+```bash
+uv run python scripts/diagnose_api.py
+```
+
+## 📄 开源协议
+[MIT License](LICENSE)
